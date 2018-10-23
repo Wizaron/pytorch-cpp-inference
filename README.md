@@ -7,8 +7,9 @@
 
 1. Dockerfile can be found at `docker` directory. In order to build docker image, you should go to `docker` directory and run `docker build -t <docker-image-name> .`.
 2. After creation of the docker image, you should create a docker container via `docker run -v <directory-that-this-repository-resides>:<target-directory-in-docker-container> -it <docker-image-name>`.
-3. Inside docker container, download `libtorch` from [PyTorch Website](https://pytorch.org/get-started/locally/) or using `wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip`.
-4. Unzip it via `unzip libtorch-shared-with-deps-latest.zip`. This will create `libtorch` directory that contains torch shared libraries and headers.
+3. Inside docker container, go to the directory that this repository resides.
+4. Download `libtorch` from [PyTorch Website](https://pytorch.org/get-started/locally/) or using `wget https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip`.
+5. Unzip it via `unzip libtorch-shared-with-deps-latest.zip`. This will create `libtorch` directory that contains torch shared libraries and headers.
 
 ## Export PyTorch ScriptModule
 
