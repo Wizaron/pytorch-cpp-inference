@@ -13,7 +13,7 @@
 
 ## Export PyTorch ScriptModule
 
-* In order to export `torch.jit.ScriptModule` of ResNet to perform C++ inference, go to `models/resnet` directory and run `python resnet.py`. It will download pretrained ResNet18 model on ImageNet and create `models/resnet_model.pth` which we will use in C++ inference.
+* In order to export `torch.jit.ScriptModule` of ResNet18 to perform C++ inference, go to `models/resnet` directory and run `python resnet.py`. It will download pretrained ResNet18 model on ImageNet and create `models/resnet_model.pth` which we will use in C++ inference.
 
 ## C++ Inference Example Build
 
