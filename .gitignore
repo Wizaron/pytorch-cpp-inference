@@ -5,6 +5,9 @@
 libtorch
 *.zip
 
+# Ignore binaries
+predict
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
