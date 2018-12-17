@@ -34,7 +34,7 @@
 	3. Run the executable via `./predict <path-to-image> <path-to-exported-script-module> <path-to-labels-file>`.
 	4. Example: `./predict image.jpeg ../../models/resnet/resnet_model.pth ../../models/resnet/labels.txt`
 
-## Web Server
+### Web Server
 
 * In order to build a web server for production:
 	1. Go to `inference-cpp/cnn-classification/server` directory.
@@ -42,7 +42,7 @@
 	3. Run the binary via `./predict <path-to-exported-script-module> <path-to-labels-file>` (It will serve the model on `http://localhost:8181/predict`).
 	4. In order to make a request, open a new tab and run `python test_api.py` (It will make a request to `localhost:8181/predict`).
 
-# Acknowledgement
+## Acknowledgement
 
 1. [pytorch](https://pytorch.org)
 2. [crow](https://github.com/ipkn/crow)
