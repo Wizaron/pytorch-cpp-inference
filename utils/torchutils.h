@@ -18,9 +18,9 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
-std::shared_ptr<torch::jit::script::Module> read_model(std::string);
+torch::jit::script::Module read_model(std::string, bool);
 std::vector<float> forward(std::vector<cv::Mat>,
-  std::shared_ptr<torch::jit::script::Module>);
+  torch::jit::script::Module, bool);
 std::tuple<std::string, std::string> postprocess(std::vector<float>,
   std::vector<std::string>);
 

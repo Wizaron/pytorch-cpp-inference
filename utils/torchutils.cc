@@ -43,13 +43,18 @@ torch::Tensor __convert_images_to_tensor(std::vector<cv::Mat> images) {
 }
 
 // Predict
-torch::Tensor __predict(std::shared_ptr<torch::jit::script::Module> model, torch::Tensor tensor) {
+torch::Tensor __predict(torch::jit::script::Module model, torch::Tensor tensor) {
 
   std::vector<torch::jit::IValue> inputs;
   inputs.push_back(tensor);
 
   // Execute the model and turn its output into a tensor.
-  torch::Tensor output = model->forward(inputs).toTensor();
+  torch::NoGradGuard no_grad;
+  torch::Tensor output = model.forward(inputs).toTensor();
+
+  torch::DeviceType cpu_device_type = torch::kCPU;
+  torch::Device cpu_device(cpu_device_type);
+  output = output.to(cpu_device);
 
   return output;
 }
@@ -81,14 +86,14 @@ std::vector<float> __get_outputs(torch::Tensor output) {
   int ndim = output.ndimension();
   assert(ndim == 2);
 
-  torch::IntList sizes = output.sizes();
+  torch::ArrayRef<int64_t> sizes = output.sizes();
   int n_samples = sizes[0];
   int n_classes = sizes[1];
 
   assert(n_samples == 1);
 
-  std::vector<float> unnorm_probs(output.data<float>(),
-                                  output.data<float>() + (n_samples * n_classes));
+  std::vector<float> unnorm_probs(output.data_ptr<float>(),
+                                  output.data_ptr<float>() + (n_samples * n_classes));
 
   // Softmax
   std::vector<float> probs = __softmax(unnorm_probs);
@@ -97,21 +102,43 @@ std::vector<float> __get_outputs(torch::Tensor output) {
 }
 
 // 1. Read model
-std::shared_ptr<torch::jit::script::Module> read_model(std::string model_path) {
+torch::jit::script::Module read_model(std::string model_path, bool usegpu) {
 
-  std::shared_ptr<torch::jit::script::Module> model = torch::jit::load(model_path);
+  torch::jit::script::Module model = torch::jit::load(model_path);
 
-  assert(model != nullptr);
+  if (usegpu) {
+      torch::DeviceType gpu_device_type = torch::kCUDA;
+      torch::Device gpu_device(gpu_device_type);
+
+      model.to(gpu_device);
+  } else {
+      torch::DeviceType cpu_device_type = torch::kCPU;
+      torch::Device cpu_device(cpu_device_type);
+
+      model.to(cpu_device);
+  }
 
   return model;
 }
 
 // 2. Forward
 std::vector<float> forward(std::vector<cv::Mat> images,
-  std::shared_ptr<torch::jit::script::Module> model) {
+  torch::jit::script::Module model, bool usegpu) {
 
   // 1. Convert OpenCV matrices to torch Tensor
   torch::Tensor tensor = __convert_images_to_tensor(images);
+
+  if (usegpu) {
+      torch::DeviceType gpu_device_type = torch::kCUDA;
+      torch::Device gpu_device(gpu_device_type);
+
+      tensor = tensor.to(gpu_device);
+  } else {
+      torch::DeviceType cpu_device_type = torch::kCPU;
+      torch::Device cpu_device(cpu_device_type);
+
+      tensor = tensor.to(cpu_device);
+  }
 
   // 2. Predict
   torch::Tensor output = __predict(model, tensor);

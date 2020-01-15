@@ -1,4 +1,5 @@
-FROM ubuntu:18.04
+FROM nvidia/cuda:10.0-cudnn7-devel-ubuntu16.04
+
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
          g++ \
          make \
@@ -9,7 +10,8 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -y \
          git \
          libopencv-dev \
          libboost-all-dev \
-         python-pip
+         python3 \
+         python3-pip
 
-RUN pip install https://download.pytorch.org/whl/cpu/torch-1.0.0-cp27-cp27mu-linux_x86_64.whl
-RUN pip install numpy pillow torchvision
+RUN pip3 install numpy "pillow<7"
+RUN pip3 install torch torchvision

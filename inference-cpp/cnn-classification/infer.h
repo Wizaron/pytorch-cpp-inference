@@ -26,6 +26,7 @@ std::tuple<std::string, std::string> infer(
   int, int,
   std::vector<double>, std::vector<double>,
   std::vector<std::string>,
-  std::shared_ptr<torch::jit::script::Module>);
+  torch::jit::script::Module,
+  bool);
 
 #endif

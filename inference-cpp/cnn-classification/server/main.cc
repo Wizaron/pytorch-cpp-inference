@@ -6,13 +6,21 @@ int PORT = 8181;
 
 int main(int argc, char **argv) {
 
-  if (argc != 3) {
-    std::cerr << "usage: predict <path-to-exported-script-module> <path-to-labels-file> \n";
+  if (argc != 4) {
+    std::cerr << "usage: predict <path-to-exported-script-module> <path-to-labels-file> <gpu-flag{true/false}> \n";
     return -1;
   }
 
   std::string model_path = argv[1];
   std::string labels_path = argv[2];
+  std::string usegpu_str = argv[3];
+  bool usegpu;
+
+  if (usegpu_str == "true") {
+      usegpu = true;
+  } else {
+      usegpu = false;
+  }
 
   // Set image height and width
   int image_height = 224;
@@ -36,13 +44,13 @@ int main(int argc, char **argv) {
   std::vector<double> std = {0.229, 0.224, 0.225};
 
   // Load Model
-  std::shared_ptr<torch::jit::script::Module> model = read_model(model_path);
+  torch::jit::script::Module model = read_model(model_path, usegpu);
 
   // App
   crow::SimpleApp app;
   CROW_ROUTE(app, "/predict").methods("POST"_method, "GET"_method)
   ([&image_height, &image_width,
-    &mean, &std, &labels, &model](const crow::request& req){
+    &mean, &std, &labels, &model, &usegpu](const crow::request& req){
     crow::json::wvalue result;
     result["Prediction"] = "";
     result["Confidence"] = "";
@@ -60,7 +68,7 @@ int main(int argc, char **argv) {
 
       // Predict
       std::string pred, prob;
-      tie(pred, prob) = infer(image, image_height, image_width, mean, std, labels, model);
+      tie(pred, prob) = infer(image, image_height, image_width, mean, std, labels, model, usegpu);
 
       result["Prediction"] = pred;
       result["Confidence"] = prob;

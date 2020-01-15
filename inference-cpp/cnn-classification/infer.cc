@@ -5,7 +5,8 @@ std::tuple<std::string, std::string> infer(
   int image_height, int image_width,
   std::vector<double> mean, std::vector<double> std,
   std::vector<std::string> labels,
-  std::shared_ptr<torch::jit::script::Module> model) {
+  torch::jit::script::Module model,
+  bool usegpu) {
 
   if (image.empty()) {
     std::cout << "WARNING: Cannot read image!" << std::endl;
@@ -22,7 +23,7 @@ std::tuple<std::string, std::string> infer(
       mean, std);
 
     // Forward
-    std::vector<float> probs = forward({image, }, model);
+    std::vector<float> probs = forward({image, }, model, usegpu);
 
     // Postprocess
     tie(pred, prob) = postprocess(probs, labels);
